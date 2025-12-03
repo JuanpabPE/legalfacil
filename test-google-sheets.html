@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Prueba de Google Sheets - LegalFácil</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        max-width: 600px;
+        margin: 50px auto;
+        padding: 20px;
+        background: #f0f0f0;
+      }
+      .container {
+        background: white;
+        padding: 30px;
+        border-radius: 10px;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+      }
+      h1 {
+        color: #2563eb;
+        text-align: center;
+      }
+      .status {
+        padding: 15px;
+        margin: 20px 0;
+        border-radius: 5px;
+        text-align: center;
+      }
+      .success {
+        background: #d4edda;
+        color: #155724;
+        border: 1px solid #c3e6cb;
+      }
+      .error {
+        background: #f8d7da;
+        color: #721c24;
+        border: 1px solid #f5c6cb;
+      }
+      .warning {
+        background: #fff3cd;
+        color: #856404;
+        border: 1px solid #ffeaa7;
+      }
+      button {
+        width: 100%;
+        padding: 12px;
+        background: #2563eb;
+        color: white;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        font-size: 16px;
+      }
+      button:hover {
+        background: #1d4ed8;
+      }
+      button:disabled {
+        background: #ccc;
+        cursor: not-allowed;
+      }
+      .info {
+        background: #e7f3ff;
+        padding: 15px;
+        border-radius: 5px;
+        margin: 20px 0;
+      }
+      code {
+        background: #f4f4f4;
+        padding: 2px 6px;
+        border-radius: 3px;
+        font-family: monospace;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <h1>🧪 Prueba de Google Sheets</h1>
+
+      <div class="info">
+        <strong>📋 Instrucciones:</strong>
+        <ol>
+          <li>
+            Primero completa la configuración en
+            <code>INSTRUCCIONES_GOOGLE_SHEETS.md</code>
+          </li>
+          <li>Pega tu URL de Google Apps Script en <code>script.js</code></li>
+          <li>Luego haz clic en el botón de abajo para probar</li>
+        </ol>
+      </div>
+
+      <div id="status"></div>
+
+      <button id="btnTest" onclick="probarConexion()">
+        Probar Conexión con Google Sheets
+      </button>
+
+      <div id="result" style="margin-top: 20px"></div>
+    </div>
+
+    <script>
+      // Importar la URL desde script.js
+      const GOOGLE_SCRIPT_URL = "PEGA_AQUI_TU_URL_DEL_SCRIPT";
+
+      async function probarConexion() {
+        const statusDiv = document.getElementById("status");
+        const resultDiv = document.getElementById("result");
+        const btn = document.getElementById("btnTest");
+
+        // Verificar si se configuró la URL
+        if (GOOGLE_SCRIPT_URL === "PEGA_AQUI_TU_URL_DEL_SCRIPT") {
+          statusDiv.className = "status warning";
+          statusDiv.innerHTML =
+            "⚠️ Aún no has configurado la URL de Google Apps Script. Lee las instrucciones en INSTRUCCIONES_GOOGLE_SHEETS.md";
+          return;
+        }
+
+        btn.disabled = true;
+        btn.textContent = "Probando conexión...";
+        statusDiv.className = "status";
+        statusDiv.innerHTML = "⏳ Enviando datos de prueba...";
+
+        // Datos de prueba
+        const datosPrueba = {
+          nombre: "Usuario de Prueba",
+          email: "prueba@legalfacil.com",
+          telefono: "+51 999 999 999",
+          servicio: "Prueba de Conexión",
+          mensaje:
+            "Este es un mensaje de prueba para verificar la conexión con Google Sheets",
+        };
+
+        try {
+          const response = await fetch(GOOGLE_SCRIPT_URL, {
+            method: "POST",
+            mode: "no-cors",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify(datosPrueba),
+          });
+
+          statusDiv.className = "status success";
+          statusDiv.innerHTML = "✅ ¡Datos enviados correctamente!";
+
+          resultDiv.innerHTML = `
+                    <div class="info">
+                        <strong>✅ Conexión exitosa</strong><br><br>
+                        Ve a tu Google Sheet y verifica que aparezca una nueva fila con estos datos:<br><br>
+                        <strong>Nombre:</strong> ${datosPrueba.nombre}<br>
+                        <strong>Email:</strong> ${datosPrueba.email}<br>
+                        <strong>Teléfono:</strong> ${datosPrueba.telefono}<br>
+                        <strong>Servicio:</strong> ${datosPrueba.servicio}<br>
+                        <strong>Mensaje:</strong> ${datosPrueba.mensaje}<br><br>
+                        Si ves estos datos en tu hoja, ¡la configuración está completa! 🎉
+                    </div>
+                `;
+
+          console.log("Datos enviados correctamente a Google Sheets");
+        } catch (error) {
+          statusDiv.className = "status error";
+          statusDiv.innerHTML = "❌ Error al enviar datos";
+
+          resultDiv.innerHTML = `
+                    <div class="status error">
+                        <strong>Error:</strong> ${error.message}<br><br>
+                        Verifica que:<br>
+                        1. Hayas pegado correctamente la URL del script<br>
+                        2. Hayas dado los permisos necesarios<br>
+                        3. La implementación esté activa
+                    </div>
+                `;
+
+          console.error("Error:", error);
+        } finally {
+          btn.disabled = false;
+          btn.textContent = "Probar Conexión con Google Sheets";
+        }
+      }
+
+      // Verificar configuración al cargar
+      window.onload = function () {
+        const statusDiv = document.getElementById("status");
+
+        if (GOOGLE_SCRIPT_URL === "PEGA_AQUI_TU_URL_DEL_SCRIPT") {
+          statusDiv.className = "status warning";
+          statusDiv.innerHTML =
+            "⚠️ Configuración pendiente. Lee INSTRUCCIONES_GOOGLE_SHEETS.md";
+        } else {
+          statusDiv.className = "status success";
+          statusDiv.innerHTML =
+            "✅ URL configurada. Haz clic en el botón para probar.";
+        }
+      };
+    </script>
+  </body>
+</html>
